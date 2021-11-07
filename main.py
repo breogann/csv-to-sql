@@ -1,8 +1,8 @@
 import argparse
 import pandas as pd
 import os
-from db_utils import establishConnectionWithSQL, insert_df_into_db, get_df_from_query
-from cleaning_df import dataframe_cleaning
+from src.db_utils import establishConnectionWithSQL, insert_df_into_db, get_df_from_query
+from src.cleaning_df import dataframe_cleaning
 
 
 def parse_args():

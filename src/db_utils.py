@@ -1,9 +1,8 @@
 import os
 import pandas as pd
 from sqlalchemy import create_engine
-import db_utils
-from cleaning_df import dataframe_cleaning, export_csv
-from workflow_utils import alerts, voiced_alerts, choosing_columns
+from src.cleaning_df import dataframe_cleaning, export_csv
+from src.workflow_utils import alerts, voiced_alerts, choosing_columns
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,9 +10,9 @@ load_dotenv()
 
 #0. CREATING DATABASE
 def creatingDataBase(database):
-    creating_the_database = f"""CREATE DATABASE IF NOT EXISTS {database};
+    creating_db = f"""CREATE DATABASE IF NOT EXISTS {database};
     USE {database};"""
-    engine.execute(creating_the_database)
+    engine.execute(creating_db)
 
 
 #1. ESTABLISHING CONNECTION
@@ -52,21 +51,20 @@ def insert_df_into_db(df, table_name, columns_list=False):
 insert the data in
     :return: The total number of rows inserted
 """
-    if columns_list==True:
-        columns_list = choosing_columns(df)
-    else:
-        columns_list = list(df.columns)
+
+    columns_list=list(df.columns)
 
     #2. Second, this creates the table
     creating_the_table = f"""CREATE TABLE IF NOT EXISTS {table_name} (
-    student_id VARCHAR (255),
+    student_id VARCHAR (255) NOT NULL,
     name VARCHAR (255),
     surname VARCHAR (255),
     country VARCHAR (255),
-    update_date TIMESTAMP,
-    created_date TIMESTAMP,
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (student_id)
     );"""
+
 
     voiced_alerts("created table")
     

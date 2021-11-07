@@ -17,7 +17,7 @@ def voiced_alerts(key, *counter):
 
 
 def choosing_columns(df):
-
+    
     col_dict = {
 
     }
