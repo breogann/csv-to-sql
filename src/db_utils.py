@@ -60,8 +60,8 @@ insert the data in
     name VARCHAR (255),
     surname VARCHAR (255),
     country VARCHAR (255),
-    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    update_date ON UPDATE CURRENT_TIMESTAMP,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (student_id)
     );"""
 
