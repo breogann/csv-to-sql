@@ -19,6 +19,7 @@ def creatingDataBase(database):
     engine.execute(creating_db)
 
 
+
 #1. ESTABLISHING CONNECTION
 def establishConnectionWithSQL(database, table):
     """SQLalchmey establishes the connection to the DB by using DB and table.
@@ -51,6 +52,21 @@ def establishConnectionWithSQL(database, table):
 #2. CRUD Operations
 
 #2.1. UPDATE
+
+def updating_sql(table, column, new_value, old_value):
+
+    query_update="""SET SQL_SAFE_UPDATES = 0;"""
+    
+    query=f"""
+    UPDATE {table}
+    SET {column}='{new_value}'
+    WHERE {column}='{old_value}';
+    """
+
+    engine.execute(query)
+    engine.execute(query_update)
+
+
 def insert_df_into_db(df, table_name, columns_list=False):
     """Inserts a dataframe given into a default database. We need to provide the columns in the dataframe in the
     same order we want to insert them in the database.
@@ -69,8 +85,8 @@ insert the data in
     name VARCHAR (255),
     surname VARCHAR (255),
     country VARCHAR (255),
-    update_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (student_id)
     );"""
 
@@ -106,6 +122,10 @@ insert the data in
         if affected_rows >= 1:
             counter +=1
     
+    #Example to check that update and creation dates work
+    updating_sql(table_name, "name", "biyonsé", "BEYONCE")
+
+
     return voiced_alerts("Inserted rows", counter)
 
 
@@ -136,4 +156,5 @@ dataframe. It takes the names of the columns returned and puts it as names in th
         df = df[new_columns]
 
         return export_csv(df, "output/sql_table.csv", open=True)
-        
+
+
