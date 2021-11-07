@@ -9,15 +9,25 @@ alerts = {"reading and cleaning df":["Leyendo datafreim...", "Limpiando datafrei
 "df exported":["Datafreim exportado"]}
 
 def voiced_alerts(key, *counter):
+    """Gives written and oral feedback on the tasks, accordign to the alerts dictionary.
+    :param key: The value from which key to give feedback.
+    :param counter: optional argument. We use this to give feedback on the quantity of things processed.
+    :return: None
+    """
+
     for i in alerts[key]:
         if "#" in i:
             i = i.replace("#", str(counter[0]))
         print(i)
-        return os.system("say -v Monica " + i)
+        os.system("say -v Monica " + i)
 
 
 def choosing_columns(df):
-    
+    """This will give a dictionary of the columns of a df so that the user can input which ones they want to use. Input should be by separating numbers by commas.
+    :param df: The value from which key to give feedback.
+    :return: a list of columns.
+    """
+
     col_dict = {
 
     }

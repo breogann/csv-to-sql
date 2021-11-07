@@ -10,6 +10,10 @@ load_dotenv()
 
 #0. CREATING DATABASE
 def creatingDataBase(database):
+    """Creates the database to be used in case it doesn't exist.
+    :param database: The database to create.
+    :return: None
+    """
     creating_db = f"""CREATE DATABASE IF NOT EXISTS {database};
     USE {database};"""
     engine.execute(creating_db)
@@ -17,6 +21,11 @@ def creatingDataBase(database):
 
 #1. ESTABLISHING CONNECTION
 def establishConnectionWithSQL(database, table):
+    """SQLalchmey establishes the connection to the DB by using DB and table.
+    :param database: The database to connect to.
+    :param table: The table we'll be using.
+    :return: None
+    """
     
     #Authentication
     my_sql_local = {
@@ -52,15 +61,15 @@ insert the data in
     :return: The total number of rows inserted
 """
 
-    columns_list=list(df.columns)
-
+    columns_list = list(df.columns)
+    
     #2. Second, this creates the table
     creating_the_table = f"""CREATE TABLE IF NOT EXISTS {table_name} (
     student_id VARCHAR (255) NOT NULL,
     name VARCHAR (255),
     surname VARCHAR (255),
     country VARCHAR (255),
-    update_date ON UPDATE CURRENT_TIMESTAMP,
+    update_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (student_id)
     );"""
@@ -80,6 +89,8 @@ insert the data in
     for index, rows in df.iterrows():
         for columna in columns_list:
             the_entire_row.append(rows[columna])
+        print(the_entire_row)
+            
 
         #3.2. This inserts the row
         columns = str(tuple(columns_list[1:])).replace("'", "")
