@@ -1,16 +1,17 @@
 import os
 import pandas as pd
+import numpy as np
 from src.workflow_utils import alerts, voiced_alerts
 
 def export_csv(df, path, open=False):
-    """Exports a df into a given location and is verbose.
+    """Exports a df into a given location with NaN values instead of empty and is verbose.
     :param df: The df to export.
     :param path: The path where the df will be exported.
     :param open: If True, the system will open the file.
     :return: None
     """
 
-    df.to_csv(path, index=False)
+    df.to_csv(path, index=False, na_rep=np.nan)
     print(f"Dataframe exported @ {path}")
     print(df)
     voiced_alerts("df exported")
@@ -24,7 +25,7 @@ def dataframe_cleaning (path):
     """
 
     df = pd.read_csv(path)
-    df = df.applymap(lambda x: x.upper())
+    df = df.applymap(lambda x: x.replace("'", ""))
 
     export_csv(df, "output/cleaned_input.csv")
     df = pd.read_csv("output/cleaned_input.csv")

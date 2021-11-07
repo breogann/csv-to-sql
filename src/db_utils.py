@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 from sqlalchemy import create_engine
 from src.cleaning_df import dataframe_cleaning, export_csv
 from src.workflow_utils import alerts, voiced_alerts, choosing_columns
@@ -52,8 +53,14 @@ def establishConnectionWithSQL(database, table):
 #2. CRUD Operations
 
 #2.1. UPDATE
-
-def updating_sql(table, column, new_value, old_value):
+def updating_value(table, column, new_value, old_value):
+    """Updates a field in a table.
+    :param table: The df to export.
+    :param column: Column of the value.
+    :param new_value: New value to be inputted.
+    :param old_value: Old value to meet the condition.
+    :return: None
+    """
 
     query_update="""SET SQL_SAFE_UPDATES = 0;"""
     
@@ -88,12 +95,16 @@ insert the data in
     update_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     created_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (student_id)
-    );"""
+    );
+    """
+
+    update = "SET SQL_SAFE_UPDATES = 0;"
 
 
     voiced_alerts("created table")
     
     engine.execute(creating_the_table)
+    engine.execute(update)
 
     
     #3. Third, this populates the table
@@ -108,25 +119,35 @@ insert the data in
         print(the_entire_row)
             
 
-        #3.2. This inserts the row
-        columns = str(tuple(columns_list[1:])).replace("'", "")
+        #3.2. Query to insert the row
+        columns = str(tuple(columns_list[0:])).replace("'", "")
         insert_row_query = f"""
-        INSERT IGNORE INTO {table_name} {columns} VALUES {tuple(the_entire_row[1:])};
+        INSERT IGNORE INTO {table_name} {columns} VALUES {tuple(the_entire_row[0:])};
         """
-                
-        results = engine.execute(insert_row_query)
-        the_entire_row = []
+
+        #3.3. Query to update the row
+        update_existing_values_hardcoded=f"""UPDATE {table_name} SET name = '{the_entire_row[1]}', Surname = '{the_entire_row[2]}', country = '{the_entire_row[3]}' WHERE student_id = '{the_entire_row[0]}';"""
+        #update_existing_values=f"""INSERT INTO {table_name} {columns} VALUES {tuple(the_entire_row[0:])} ON DUPLICATE KEY UPDATE student_id ='{the_entire_row[0]}';"""
         
-        #3.3. Counting the modified rows
-        affected_rows = results.rowcount
-        if affected_rows >= 1:
+        #3.4. Running the queries
+        results_insert = engine.execute(insert_row_query)
+        results_update = engine.execute(update_existing_values_hardcoded)
+        
+        the_entire_row = [] 
+        
+        #3.5. Counting the modified rows
+        inserted_rows = results_insert.rowcount
+        updated_rows = results_update.rowcount
+
+        if inserted_rows >= 1:
+            counter +=1
+        if updated_rows >=1:
             counter +=1
     
-    #Example to check that update and creation dates work
-    updating_sql(table_name, "name", "biyonsé", "BEYONCE")
-
-
-    return voiced_alerts("Inserted rows", counter)
+    
+    updating_value(table_name, "name", "biyonsé", "BEYONCE") #Example to check that update and creation dates work
+    voiced_alerts("Inserted and modified rows", counter)
+    return counter
 
 
 # 2.2. READ

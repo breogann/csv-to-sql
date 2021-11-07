@@ -4,7 +4,7 @@ import os
 alerts = {"reading and cleaning df":["Leyendo datafreim...", "Limpiando datafreim..."],
 "failure connecting to db":["Base de datos conectada"],
 "connecting the database":["Conexión establecida 🚀"],
-"Inserted rows":[f"Se han insertado # filas"],
+"Inserted and modified rows":[f"Se han modificado # filas"],
 "created table":["Se ha creado la tabla"],
 "df exported":["Datafreim exportado"]}
 
