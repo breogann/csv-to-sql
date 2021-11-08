@@ -82,5 +82,5 @@ The `--sqlcolumns` option when ignored, will select all of the columns from the 
 - Refactoring: especially parametrization of SQL queries
 - Generalizing the code for tailored queries (e.g.: sub-sets of tables)
 ##### Feature-wise:
-- Automation for downloading Google spreadsheet into a CSV
+- Automation for downloading Google spreadsheets into a CSV
 - Deployment of scripts & SQL database
