@@ -34,9 +34,9 @@ def establishConnectionWithSQL(database, table):
 
     #Create if it doesn't exist
     if database not in existing_databases:
-        engine.execute(f"""CREATE DATABASE {database};""")
+        engine.execute(f"""CREATE DATABASE IF NOT EXISTS {database} 
+        CHARACTER SET latin1 COLLATE latin1_german1_ci;""")
         engine.execute(f"""USE {database};""")
-        print(f"""Created database {database}""")    
     
 #2. CRUD Operations
 
@@ -79,7 +79,6 @@ insert the data in
 
     columns_list = list(df.columns)
 
-    
     
     #2. Second, this creates the table
     creating_the_table = f"""CREATE TABLE IF NOT EXISTS {table_name} (
