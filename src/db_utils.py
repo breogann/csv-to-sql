@@ -36,7 +36,8 @@ def establishConnectionWithSQL(database, table):
     if database not in existing_databases:
         engine.execute(f"""CREATE DATABASE IF NOT EXISTS {database} 
         CHARACTER SET latin1 COLLATE latin1_german1_ci;""")
-        engine.execute(f"""USE {database};""")
+    
+    engine.execute(f"""USE {database};""")
     
 #2. CRUD Operations
 
