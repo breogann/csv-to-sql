@@ -17,7 +17,7 @@ git checkout option1
 Choose only one of the following options:
 ### 1.1. Using YML
 ```bash
-conda env update -n csv-to-sql --file environment.yaml
+conda env update -n csv-to-sql --file environment.yml
 conda activate csv-to-sql
 ```
 ### 1.2. Using pip
@@ -52,7 +52,7 @@ When running the main.py, you can make use of the following argparse:
 --database #where you want to input your table
 --table #name of the table you want to insert
 
-#Non-required (booleans)
+#Non-required
 
 --columns #of the csv you want to select
 --sqlcolumns #you want to retrieve
@@ -63,9 +63,9 @@ An example would be:
 python3 main.py --path input/source_students.csv --columns --database students --table warehouse_students
 ```
 
-The `--columns` option, when either set to False or ignored, will select all of the columns from the inital csv. If True, it will 
+The `--columns` option, when not used will select all of the columns from the inital csv. If called, it will show the user the columns and ask them to input them by comma separated numbers.
 
-The `--sqlcolumns` option, when either set to False or ignored, will select all of the columns from the SQL table.
+The `--sqlcolumns` option when ignored, will select all of the columns from the SQL table. When called, will force the new columns.
 
 # Technologies used
 - os
@@ -76,10 +76,11 @@ The `--sqlcolumns` option, when either set to False or ignored, will select all 
 - [sqlalchemy](https://pypi.org/project/SQLAlchemy/)
 
 
-# TO-DO
+# TO-DO 🔧
 ##### Code-wise:
 - Classes oriented approach
 - Refactoring: especially parametrization of SQL queries
+- Generalizing the code for tailored queries (e.g.: sub-sets of tables)
 ##### Feature-wise:
 - Automation for donwloading Google spreadsheet into a CSV
 - Deployment of scripts & SQL database

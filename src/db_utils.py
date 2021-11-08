@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
+from sqlalchemy_utils import create_database, database_exists
 from src.cleaning_df import dataframe_cleaning, export_csv
 from src.workflow_utils import alerts, voiced_alerts, choosing_columns
 from dotenv import load_dotenv
@@ -9,47 +10,34 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-#0. CREATING DATABASE
-def creatingDataBase(database):
-    """Creates the database to be used in case it doesn't exist.
-    :param database: The database to create.
-    :return: None
-    """
-    creating_db = f"""CREATE DATABASE IF NOT EXISTS {database};
-    USE {database};"""
-    engine.execute(creating_db)
-
-
-
 #1. ESTABLISHING CONNECTION
 def establishConnectionWithSQL(database, table):
-    """SQLalchmey establishes the connection to the DB by using DB and table.
+    """SQLalchmey establishes the connection to the DB by using DB and table & creates the DB.
     :param database: The database to connect to.
     :param table: The table we'll be using.
     :return: None
     """
-    
+
     #Authentication
     my_sql_local = {
-    'host':'localhost',
     'user':'root',
     'password':os.getenv("password"),
-    'database':database,
-    'table':table}
+    'host':'localhost',
+    'port':3306,
+    'database':{database}}
 
-    connectionData=f"mysql+pymysql://root:{my_sql_local['password']}@localhost/{my_sql_local['database']}"
-    
+    #Getting list of DB
     global engine
+    engine = create_engine('mysql://{0}:{1}@{2}:{3}'.format(my_sql_local['user'], my_sql_local['password'], my_sql_local['host'], my_sql_local['port']))
+    existing_databases = engine.execute("SHOW DATABASES;")
+    existing_databases = [d[0] for d in existing_databases]
+
+    #Create if it doesn't exist
+    if database not in existing_databases:
+        engine.execute(f"""CREATE DATABASE {database};""")
+        engine.execute(f"""USE {database};""")
+        print(f"""Created database {database}""")    
     
-    try:
-        engine = create_engine(connectionData, pool_pre_ping=True)
-        creatingDataBase(database)
-        voiced_alerts("connection to database")
-    except:
-        voiced_alerts("failure connecting to db")
-
-
-
 #2. CRUD Operations
 
 #2.1. UPDATE
