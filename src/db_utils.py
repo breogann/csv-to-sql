@@ -83,8 +83,15 @@ def insert_df_into_db(df, table_name, columns_list=False):
 insert the data in
     :return: The total number of rows inserted
 """
+    if columns_list==True:
+        columns_list = choosing_columns(df)
+
+    elif columns_list==False:
+        columns_list = list(df.columns)
 
     columns_list = list(df.columns)
+
+    
     
     #2. Second, this creates the table
     creating_the_table = f"""CREATE TABLE IF NOT EXISTS {table_name} (
@@ -135,15 +142,11 @@ insert the data in
         
         the_entire_row = [] 
         
-        #3.5. Counting the modified rows
+        #3.5. Counting the updated rows
         inserted_rows = results_insert.rowcount
-        updated_rows = results_update.rowcount
 
         if inserted_rows >= 1:
             counter +=1
-        if updated_rows >=1:
-            counter +=1
-    
     
     updating_value(table_name, "name", "biyonsé", "BEYONCE") #Example to check that update and creation dates work
     voiced_alerts("Inserted and modified rows", counter)
@@ -177,5 +180,3 @@ dataframe. It takes the names of the columns returned and puts it as names in th
         df = df[new_columns]
 
         return export_csv(df, "output/sql_table.csv", open=True)
-
-

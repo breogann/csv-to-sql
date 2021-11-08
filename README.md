@@ -60,7 +60,7 @@ When running the main.py, you can make use of the following argparse:
 
 An example would be:
 ```bash
-python main.py --path input/source_students.csv --database students --table warehouse_students --columns False --sqlcolumns False
+python3 main.py --path input/source_students.csv --columns --database students --table warehouse_students
 ```
 
 The `--columns` option, when either set to False or ignored, will select all of the columns from the inital csv. If True, it will 
@@ -69,15 +69,17 @@ The `--sqlcolumns` option, when either set to False or ignored, will select all 
 
 # Technologies used
 - os
+- [numpy](https://pypi.org/project/numpy/)
 - [pandas](https://pypi.org/project/pandas/)
-- [sqlalchemy](https://pypi.org/project/SQLAlchemy/)
 - [dotenv](https://pypi.org/project/dotenv/)
 - [argparse](https://pypi.org/project/argparse/)
+- [sqlalchemy](https://pypi.org/project/SQLAlchemy/)
+
 
 # TO-DO
 ##### Code-wise:
-- Create classes
-- Refactoring
+- Classes oriented approach
+- Refactoring: especially parametrization of SQL queries
 ##### Feature-wise:
 - Automation for donwloading Google spreadsheet into a CSV
 - Deployment of scripts & SQL database

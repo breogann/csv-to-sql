@@ -6,7 +6,8 @@ alerts = {"reading and cleaning df":["Leyendo datafreim...", "Limpiando datafrei
 "connecting the database":["Conexión establecida 🚀"],
 "Inserted and modified rows":[f"Se han modificado # filas"],
 "created table":["Se ha creado la tabla"],
-"df exported":["Datafreim exportado"]}
+"df exported":["Datafreim exportado"],
+"choosing columns":["Elija las columnas"]}
 
 def voiced_alerts(key, *counter):
     """Gives written and oral feedback on the tasks, accordign to the alerts dictionary.
@@ -35,7 +36,8 @@ def choosing_columns(df):
     for index, element in enumerate(df.columns):
         col_dict[index]=element
     
-    columns=input(f"Here's the list of columns: {col_dict}.\n Choose the ones you want to keep by inputting the numbers separated by a comma, as in: \n Ex: 0,3\n")
+    voiced_alerts("choosing columns")
+    columns=input(f"Here's the list of columns: {col_dict}.\n Choose the ones you want to keep by inputting the numbers separated by a comma, as in: \n Ex: 0,1,2,3\n")
     chosen_columns = columns.split(",")
 
     new_list = []
