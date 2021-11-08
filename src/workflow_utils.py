@@ -1,4 +1,5 @@
 
+from logging import raiseExceptions
 import os
 
 alerts = {"reading and cleaning df":["Leyendo datafreim...", "Limpiando datafreim..."],
@@ -38,7 +39,13 @@ def choosing_columns(df):
     
     voiced_alerts("choosing columns")
     columns=input(f"Here's the list of columns: {col_dict}.\n Choose the ones you want to keep by inputting the numbers separated by a comma, as in: \n Ex: 0,1,2,3\n")
-    chosen_columns = columns.split(",")
+    chosen_columns = columns.replace(" ", "").split(",")
+
+    for i in chosen_columns:
+        if type(int(i)) != int:
+            raise ValueError("Only input numbers and commas")
+        elif int(i) > len(df.columns):
+            raise ValueError("The column doesn't exist")
 
     new_list = []
     for i in chosen_columns:

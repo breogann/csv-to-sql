@@ -27,7 +27,6 @@ def dataframe_cleaning (path):
     df = pd.read_csv(path)
     df = df.applymap(lambda x: x.replace("'", ""))
 
-    export_csv(df, "output/cleaned_input.csv")
-    df = pd.read_csv("output/cleaned_input.csv")
     voiced_alerts("reading and cleaning df")
+    export_csv(df, "output/cleaned_input.csv")    
     return df
