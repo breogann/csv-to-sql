@@ -44,8 +44,10 @@ def choosing_columns(df):
     for i in chosen_columns:
         if type(int(i)) != int:
             raise ValueError("Only input numbers and commas")
+            choosing_columns(df)
         elif int(i) > len(df.columns):
             raise ValueError("The column doesn't exist")
+            choosing_columns(df)
 
     new_list = []
     for i in chosen_columns:
