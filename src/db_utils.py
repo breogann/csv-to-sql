@@ -61,10 +61,31 @@ def createsTables (create_table_query, database = "CASE_STUDY"):
 
 
 # 3. READ FILES TO INSERT
-df_students = pd.read_csv("output/google_sheets.csv")
-df_exams = pd.read_csv("output/mongo_atlas.csv")
-df_students.columns = ["SOURCE_STUDENT_ID", "NAME", "SURNAME", "COUNTRY"]
-df_exams.columns = ["SOURCE_STUDENT_ID", "COHORT_ID", "CAMPUS_ID", "TEACHER_ID", "SCORE_VALUE"]
+def changeColumns(path, dict_):
+    """Establishes a connection with Snowflake for further creating an engine.
+    :param path: string, path to the df
+    :param dict_: dictionary with keys as the old column names and values as the new one.
+    :return: none.
+    """
+    df = pd.read_csv(path)
+    df.rename(columns = dict_, inplace=True)
+    return df
+
+students_columns = {"student_id" : "SOURCE_STUDENT_ID",
+        "name": "NAME",
+        "Surname": "SURNAME",
+        "country":"COUNTRY"}
+ 
+exams_columns = {"student_id" : "SOURCE_STUDENT_ID",
+        "cohort_id": "COHORT_ID",
+        "campus_id": "CAMPUS_ID",
+        "teacher_id":"TEACHER_ID",
+        "score_value":"SCORE_VALUE"}
+
+
+df_students = changeColumns("output/google_sheets.csv", students_columns)
+df_exams = changeColumns("output/mongo_atlas.csv", exams_columns)
+
 
 
 # 4. SNOWFLAKE AUTHENTICATION & CONNECTION FOR ENGINE
