@@ -53,7 +53,7 @@ echo MONGO_CONNECTION_STRING='"your_password"' >> .env
 
 You're now all set to try it. [Here](https://whimsical.com/snowflake-R7DsKdgPEFNQJ37HwWB2Yx) is a view of the workflow that the project follows:
 
-![workflow](imgs/whimsical-case.png)
+![workflow](imgs/whimsical.png)
 
 # Technologies used
 
