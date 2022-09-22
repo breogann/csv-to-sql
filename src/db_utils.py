@@ -12,7 +12,7 @@ from src.snowflake_queries.read import last_created_table
 
 # 1. ESTABLISH CONNECTION
 def establishConnectionWithSnowflake():
-    """Establishes a connection with Snowflake for further creating a cursor.
+    """Creates a connector for Snowflake for further creating a cursor.
     :return: a connector.
     """
     return snowflake.connector.connect(
@@ -20,9 +20,16 @@ def establishConnectionWithSnowflake():
         password = st.secrets["SNOWFLAKE_PASSWORD"],
         account = st.secrets["SNOWFLAKE_ACCOUNT"]
     )
-    
-connection = establishConnectionWithSnowflake()
-cursor = connection.cursor()
+
+def connect ():
+    """Establishes a connection with Snowflake for further creating a cursor.
+    :return: connection and cursor.
+    """  
+    connection = establishConnectionWithSnowflake()
+    cursor = connection.cursor()
+    cursor.execute("USE WAREHOUSE WAREHOUSE_1;")
+    cursor.execute("USE CASE_STUDY;")
+    return connection, cursor
 
 # 2. CREATES TABLES
 def createsTables (create_table_query, database = "CASE_STUDY"):
@@ -32,12 +39,11 @@ def createsTables (create_table_query, database = "CASE_STUDY"):
     :return: none.
     """  
     try: 
-        connection = establishConnectionWithSnowflake()
-        cursor = connection.cursor()
-        cursor.execute(f"USE {database};")
+
+        # Connect  and create table
+        connection, cursor = connect()
         cursor.execute(create_table_query)
-        cursor.execute("USE WAREHOUSE WAREHOUSE_1;")
-        
+
         # Get the name of the table
         df = pd.read_sql(last_created_table, con=connection)
         table_name = df.iloc[0]["TABLE_NAME"]
@@ -46,10 +52,7 @@ def createsTables (create_table_query, database = "CASE_STUDY"):
         query = f"SELECT * FROM {table_name};"
         df_2 = pd.read_sql(query, con=connection)
         
-        print(df_2)
-
         one_row = cursor.fetchone()
-        print(one_row[0])
 
     finally:
         cursor.close()
@@ -80,13 +83,18 @@ def engineSnowflake():
         warehouse="WAREHOUSE_1"
     ))
 
-engine = engineSnowflake()
+
 
 def selectFromTable (table):
     """Queries a whole table on snowflake.
     :param table: string. the name of the table to which connect to. 
     :return: a pandas dataframe with the queried table.
     """  
+    # Connection & engine 
+    connection, _ = connect()
+    engine = engineSnowflake()
+
+    # Querying the table
     query = engine.execute(f"SELECT * FROM {table}")
     return pd.read_sql(query, con=connection)
 
@@ -99,10 +107,10 @@ def insertIntoSnowflake(table, df, query):
     :param query: string. query for insertion
     :return: none.
     """  
-    connection = establishConnectionWithSnowflake()
-    cursor = connection.cursor()
-    cursor.execute("USE WAREHOUSE WAREHOUSE_1;")
-    cursor.execute("USE CASE_STUDY;")
+
+    _, cursor = connect()
+    engine = engineSnowflake()
+
     
     # 5.1. Load the new info into a temporary table in Snowflake
     df.to_sql(name=f'temporary_{table}',
@@ -111,10 +119,7 @@ def insertIntoSnowflake(table, df, query):
                     method = pd_writer,
                     index=False)
 
-    connection = establishConnectionWithSnowflake()
-    cursor = connection.cursor()
-    cursor.execute("USE WAREHOUSE WAREHOUSE_1;")
-    cursor.execute("USE CASE_STUDY;")
+    _, cursor = connect()
 
    # 5.2. UPDATING / MERGING THE INFO
    # Create if it's not created
@@ -134,10 +139,8 @@ def selectEverythingSnowflake(table):
     :param table: string. the name of the table to which select from.
     :return: a pandas dataframe with the queried info.
     """  
-    connection = establishConnectionWithSnowflake()
-    cursor = connection.cursor()
-    cursor.execute("USE WAREHOUSE WAREHOUSE_1;")
-    cursor.execute("USE CASE_STUDY;")
+
+    connection, _ = connect()
     query_2 = f'SELECT * FROM {table};'
     return pd.read_sql(query_2, con=connection)
 
@@ -146,11 +149,7 @@ def createView ():
     """Creates a view for warehouse_progress if it doesn't exist.
     :return: a pandas dataframe with the queried view.
     """  
-    connection = establishConnectionWithSnowflake()
-    cursor = connection.cursor()
-    cursor.execute("USE WAREHOUSE WAREHOUSE_1;")
-    cursor.execute("USE CASE_STUDY;")
-
+    connection, cursor = connect()
     cursor.execute(view)
 
     query = 'SELECT * FROM warehouse_progress;'
