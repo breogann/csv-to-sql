@@ -11,6 +11,7 @@ def changeColumns(path, dict_):
     columns_in_csv_in_dict = [i for i in df.columns if i in dict_.values()]
     return df[columns_in_csv_in_dict]
 
+
 students_columns = {"student_id" : "SOURCE_STUDENT_ID",
         "name": "NAME",
         "Surname": "SURNAME",

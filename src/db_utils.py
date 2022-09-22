@@ -6,6 +6,7 @@ from snowflake.connector.pandas_tools import pd_writer
 from sqlalchemy import create_engine
 from snowflake.sqlalchemy import URL
 
+from src.checks import allColumns
 from src.transformation import changeColumns, students_columns, exams_columns
 from src.snowflake_queries.create import create_warehouse_exams, create_warehouse_students, view
 from src.snowflake_queries.read import last_created_table
@@ -64,6 +65,10 @@ def createsTables (create_table_query, database = "CASE_STUDY"):
 # 3. READ FILES TO INSERT
 df_students = changeColumns("output/google_sheets.csv", students_columns)
 df_exams = changeColumns("output/mongo_atlas.csv", exams_columns)
+
+allColumns(df_students)
+allColumns(df_exams)
+
 
 
 # 4. SNOWFLAKE AUTHENTICATION & CONNECTION FOR ENGINE
