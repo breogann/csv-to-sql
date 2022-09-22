@@ -1,12 +1,13 @@
 import pandas as pd
-import os
 import streamlit as st
 import snowflake.connector
-from snowflake.connector.pandas_tools import pd_writer
-from sqlalchemy.engine.url import URL
 
+from snowflake.connector.pandas_tools import pd_writer
 from sqlalchemy import create_engine
 from snowflake.sqlalchemy import URL
+
+from src.snowflake_queries.create import create_warehouse_exams, create_warehouse_students, view
+from src.snowflake_queries.read import last_created_table
 
 # 1. ESTABLISH CONNECTION
 def establishConnectionWithSnowflake():
@@ -20,16 +21,6 @@ connection = establishConnectionWithSnowflake()
 cursor = connection.cursor()
 
 # 2. CREATES TABLES
-last_created_table = """SELECT table_schema,
-                           table_name,
-                           created,
-                           last_altered
-                                FROM information_schema.tables
-                                WHERE created > DATEADD(DAY, -30, CURRENT_TIMESTAMP)
-                                      AND table_type = 'BASE TABLE'
-                                ORDER BY created desc
-                                LIMIT 1;"""
-
 def createsTables (create_table_query, database = "CASE_STUDY"):  
     try: 
         connection = establishConnectionWithSnowflake()
@@ -56,41 +47,12 @@ def createsTables (create_table_query, database = "CASE_STUDY"):
     connection.close()
     print("Table has been created")
 
-create_warehouse_students = """
-CREATE TABLE IF NOT EXISTS warehouse_students
-(
-    id                int IDENTITY(1,1) PRIMARY KEY,
-    source_student_id varchar(255),
-    name              varchar(255),
-    surname           varchar(255),
-    country           varchar(255),
-    update_date       timestamp,
-    created_date    timestamp
-);
-"""
-
-
-create_warehouse_exams = """
-CREATE TABLE IF NOT EXISTS warehouse_exams 
-(
-    id                int IDENTITY(1,1) PRIMARY KEY,
-    source_student_id varchar(255),
-    cohort_id         varchar(255),
-    campus_id         varchar(255),
-    teacher_id        varchar(255),
-    update_date       timestamp,
-    created_date    timestamp,
-    score_value       int
-);
-"""
-
 
 # 3. READ FILES TO INSERT
 df_students = pd.read_csv("output/google_sheets.csv")
 df_exams = pd.read_csv("output/mongo_atlas.csv")
 df_students.columns = ["SOURCE_STUDENT_ID", "NAME", "SURNAME", "COUNTRY"]
 df_exams.columns = ["SOURCE_STUDENT_ID", "COHORT_ID", "CAMPUS_ID", "TEACHER_ID", "SCORE_VALUE"]
-
 
 
 # 4. SNOWFLAKE AUTHENTICATION & CONNECTION
@@ -113,39 +75,6 @@ def selectFromTable (table):
     return pd.read_sql(query, con=connection)
 
 
-create_temporary_students_table = """MERGE INTO warehouse_students
-    USING temporary_warehouse_students
-    ON warehouse_students.source_student_id = temporary_warehouse_students.source_student_id
-    WHEN matched THEN
-        UPDATE SET warehouse_students.update_date = CURRENT_TIMESTAMP
-    WHEN NOT matched THEN
-        INSERT (source_student_id, name, surname, country, update_date, created_date)
-            VALUES (temporary_warehouse_students.source_student_id,
-            temporary_warehouse_students.name,
-            temporary_warehouse_students.surname,
-            temporary_warehouse_students.country,
-            CURRENT_TIMESTAMP,
-            CURRENT_TIMESTAMP
-            ); """
-
-
-create_temporary_exams_table = """MERGE INTO warehouse_exams
-USING temporary_warehouse_exams
-ON warehouse_exams.source_student_id = temporary_warehouse_exams.source_student_id
-    WHEN matched THEN
-        UPDATE SET warehouse_exams.update_date = CURRENT_TIMESTAMP
-    WHEN NOT matched THEN
-    INSERT (source_student_id, cohort_id, campus_id, teacher_id, update_date, created_date, score_value)
-        VALUES (temporary_warehouse_exams.source_student_id,
-        temporary_warehouse_exams.cohort_id,
-        temporary_warehouse_exams.campus_id,
-        temporary_warehouse_exams.teacher_id,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
-        temporary_warehouse_exams.score_value
-        ); """
-
-
 # 5. INSERT: insert skipping duplicates using temp table
 def insertIntoSnowflake(table, df, query):
     connection = establishConnectionWithSnowflake()
@@ -160,9 +89,6 @@ def insertIntoSnowflake(table, df, query):
                     method = pd_writer,
                     index=False)
 
-
-    print("TEMPORARY TABLE LOADED")
-
     connection = establishConnectionWithSnowflake()
     cursor = connection.cursor()
     cursor.execute("USE WAREHOUSE WAREHOUSE_1;")
@@ -176,8 +102,6 @@ def insertIntoSnowflake(table, df, query):
         createsTables (create_warehouse_exams)
 
     cursor.execute(query)
-
-    print("INFO IS MERGED")
     
     # 5.3. Drop the temporary table
     delete_temporary_table = f'DROP TABLE temporary_{table}'
@@ -197,13 +121,7 @@ def createView ():
     cursor.execute("USE WAREHOUSE WAREHOUSE_1;")
     cursor.execute("USE CASE_STUDY;")
 
-    cursor.execute("""
-            CREATE VIEW IF NOT EXISTS warehouse_progress AS 
-            SELECT students.source_student_id, name, surname, country, score_value
-                FROM warehouse_students as students
-                    JOIN warehouse_exams as exams 
-                    ON students.source_student_id=exams.source_student_id;
-                    """)
+    cursor.execute(view)
 
     query = 'SELECT * FROM warehouse_progress;'
     return pd.read_sql(query, con=connection)

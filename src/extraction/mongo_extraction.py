@@ -1,6 +1,7 @@
-import pandas as pd
-from pymongo import MongoClient
 import streamlit as st
+import pandas as pd
+
+from pymongo import MongoClient
 
 def connectingMongoAtlas(database, collection):
 

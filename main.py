@@ -1,12 +1,16 @@
-from multiprocessing.reduction import DupFd
 import streamlit as st
-from PIL import Image
-from src.extraction import googlesheets_extraction, mongo_extraction
 import src.db_utils as sfk
-from src.db_utils import df_students, df_exams
-from src.db_utils import create_temporary_students_table, create_temporary_exams_table
 import pandas as pd
 import plotly.express as px
+from multiprocessing.reduction import DupFd
+from PIL import Image
+
+from src.extraction import googlesheets_extraction, mongo_extraction
+from src.db_utils import df_students, df_exams
+
+from src.snowflake_queries.create import create_temporary_exams_table, create_temporary_students_table
+from src.snowflake_queries.update import create_temporary_students_table, create_temporary_exams_table
+
 
 st.set_page_config(
      page_title="Data Ironhack",
