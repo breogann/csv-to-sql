@@ -11,7 +11,7 @@ from src.db_utils import df_students, df_exams
 from src.snowflake_queries.create import create_temporary_exams_table, create_temporary_students_table
 from src.snowflake_queries.update import create_temporary_students_table, create_temporary_exams_table
 
-
+# PAGE CONFIGURATION
 st.set_page_config(
      page_title="Data Ironhack",
      page_icon="📊",
@@ -24,6 +24,8 @@ st.set_page_config(
      }
  )
 
+
+# 0. LAYOUT
 col1, col2, col3 = st.columns([1,6,1])
 
 with col1:
@@ -50,7 +52,6 @@ with col2:
     - To run the whole process at once, go to pipeline page (menu on the left)
     - Details for code below
     """)
-
 
 
     # 1. FETCH STUDENTS FROM GOOGLE SHEETS

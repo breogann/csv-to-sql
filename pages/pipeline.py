@@ -3,7 +3,6 @@ import src.db_utils as sfk
 import pandas as pd
 import plotly.express as px
 
-from multiprocessing.reduction import DupFd
 from PIL import Image
 
 from src.extraction import googlesheets_extraction, mongo_extraction
@@ -12,8 +11,7 @@ from src.db_utils import df_students, df_exams
 from src.snowflake_queries.create import create_temporary_exams_table, create_temporary_students_table
 from src.snowflake_queries.update import create_temporary_students_table, create_temporary_exams_table
 
-
-
+# 0. LAYOUT
 col1, col2, col3 = st.columns([1,6,1])
 with col1:
     st.write("")

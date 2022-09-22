@@ -9,8 +9,12 @@ from snowflake.sqlalchemy import URL
 from src.snowflake_queries.create import create_warehouse_exams, create_warehouse_students, view
 from src.snowflake_queries.read import last_created_table
 
+
 # 1. ESTABLISH CONNECTION
 def establishConnectionWithSnowflake():
+    """Establishes a connection with Snowflake for further creating a cursor.
+    :return: a connector.
+    """
     return snowflake.connector.connect(
         user = st.secrets["SNOWFLAKE_USER"],
         password = st.secrets["SNOWFLAKE_PASSWORD"],
@@ -21,7 +25,12 @@ connection = establishConnectionWithSnowflake()
 cursor = connection.cursor()
 
 # 2. CREATES TABLES
-def createsTables (create_table_query, database = "CASE_STUDY"):  
+def createsTables (create_table_query, database = "CASE_STUDY"):
+    """Establishes a connection with Snowflake for further creating a cursor.
+    :param alcreate_table_query: string, query to create the table.
+    :param database: string, default. the name of the database to which connect to. 
+    :return: none.
+    """  
     try: 
         connection = establishConnectionWithSnowflake()
         cursor = connection.cursor()
@@ -57,6 +66,9 @@ df_exams.columns = ["SOURCE_STUDENT_ID", "COHORT_ID", "CAMPUS_ID", "TEACHER_ID",
 
 # 4. SNOWFLAKE AUTHENTICATION & CONNECTION
 def engineSnowflake():
+    """Establishes a connection with Snowflake for further creating an engine.
+    :return: none.
+    """  
     return create_engine(URL(
         account = st.secrets['SNOWFLAKE_ACCOUNT'],
         user = st.secrets["SNOWFLAKE_USER"],
@@ -71,12 +83,22 @@ def engineSnowflake():
 engine = engineSnowflake()
 
 def selectFromTable (table):
+    """Queries a whole table on snowflake.
+    :param table: string. the name of the table to which connect to. 
+    :return: a pandas dataframe with the queried table.
+    """  
     query = engine.execute(f"SELECT * FROM {table}")
     return pd.read_sql(query, con=connection)
 
 
 # 5. INSERT: insert skipping duplicates using temp table
 def insertIntoSnowflake(table, df, query):
+    """Inserts a whole table on snowflake.
+    :param table: string. the name of the table to which insert to. 
+    :param df: string. the df to be inserted.
+    :param query: string. query for insertion
+    :return: none.
+    """  
     connection = establishConnectionWithSnowflake()
     cursor = connection.cursor()
     cursor.execute("USE WAREHOUSE WAREHOUSE_1;")
@@ -108,6 +130,10 @@ def insertIntoSnowflake(table, df, query):
     cursor.execute(delete_temporary_table)
 
 def selectEverythingSnowflake(table):
+    """Queries a whole table on snowflake.
+    :param table: string. the name of the table to which select from.
+    :return: a pandas dataframe with the queried info.
+    """  
     connection = establishConnectionWithSnowflake()
     cursor = connection.cursor()
     cursor.execute("USE WAREHOUSE WAREHOUSE_1;")
@@ -115,7 +141,11 @@ def selectEverythingSnowflake(table):
     query_2 = f'SELECT * FROM {table};'
     return pd.read_sql(query_2, con=connection)
 
+
 def createView ():
+    """Creates a view for warehouse_progress if it doesn't exist.
+    :return: a pandas dataframe with the queried view.
+    """  
     connection = establishConnectionWithSnowflake()
     cursor = connection.cursor()
     cursor.execute("USE WAREHOUSE WAREHOUSE_1;")
@@ -125,4 +155,3 @@ def createView ():
 
     query = 'SELECT * FROM warehouse_progress;'
     return pd.read_sql(query, con=connection)
-
