@@ -9,6 +9,7 @@ from PIL import Image
 from src.extraction import googlesheets_extraction, mongo_extraction
 from src.db_utils import df_students, df_exams
 
+from src.transformation import campuses
 from src.snowflake_queries.create import create_temporary_exams_table, create_temporary_students_table
 from src.snowflake_queries.update import create_temporary_students_table, create_temporary_exams_table
 
@@ -77,6 +78,7 @@ with col2:
 
         # 5. Visualization by: 
         st.header("5. Quick visualization")
+        df_exams.replace({"CAMPUS_ID": campuses}, inplace=True)
         fig = px.bar(df_exams, x="CAMPUS_ID", y='SCORE_VALUE', barmode = 'group',text_auto = True)
         st.plotly_chart(fig)
         

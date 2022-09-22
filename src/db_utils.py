@@ -6,6 +6,7 @@ from snowflake.connector.pandas_tools import pd_writer
 from sqlalchemy import create_engine
 from snowflake.sqlalchemy import URL
 
+from src.transformation import changeColumns, students_columns, exams_columns
 from src.snowflake_queries.create import create_warehouse_exams, create_warehouse_students, view
 from src.snowflake_queries.read import last_created_table
 
@@ -61,31 +62,8 @@ def createsTables (create_table_query, database = "CASE_STUDY"):
 
 
 # 3. READ FILES TO INSERT
-def changeColumns(path, dict_):
-    """Establishes a connection with Snowflake for further creating an engine.
-    :param path: string, path to the df
-    :param dict_: dictionary with keys as the old column names and values as the new one.
-    :return: none.
-    """
-    df = pd.read_csv(path)
-    df.rename(columns = dict_, inplace=True)
-    return df
-
-students_columns = {"student_id" : "SOURCE_STUDENT_ID",
-        "name": "NAME",
-        "Surname": "SURNAME",
-        "country":"COUNTRY"}
- 
-exams_columns = {"student_id" : "SOURCE_STUDENT_ID",
-        "cohort_id": "COHORT_ID",
-        "campus_id": "CAMPUS_ID",
-        "teacher_id":"TEACHER_ID",
-        "score_value":"SCORE_VALUE"}
-
-
 df_students = changeColumns("output/google_sheets.csv", students_columns)
 df_exams = changeColumns("output/mongo_atlas.csv", exams_columns)
-
 
 
 # 4. SNOWFLAKE AUTHENTICATION & CONNECTION FOR ENGINE
