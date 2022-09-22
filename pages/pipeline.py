@@ -33,7 +33,7 @@ with col2:
             st.success('Exams fetched!')
 
         # 3. LOAD INTO SNOWFLAKE
-        with st.spinner('Merging updates'):
+        with st.spinner('Uploading and retrieving updates from snowflake'):
 
             st.markdown("![git merge](https://media.giphy.com/media/cFkiFMDg3iFoI/giphy.gif)")
             
@@ -50,10 +50,12 @@ with col2:
             """
             st.markdown(hide_table_row_index, unsafe_allow_html=True)
             df_students = sfk.selectEverythingSnowflake("warehouse_students")
+            st.subheader("Table: warehouse_students")
             st.table(df_students)
 
             st.markdown(hide_table_row_index, unsafe_allow_html=True)
             df_exams = sfk.selectEverythingSnowflake("warehouse_exams")
+            st.subheader("Table: warehouse_exams")
             st.table(df_exams)
             st.success('New students & exams loaded into Snowflake!')
 

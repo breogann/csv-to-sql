@@ -87,7 +87,7 @@ with col2:
     ## 3.1. Students & exams
     update = st.checkbox('Update students & exams tables 👩‍🎓')
     if update:
-        with st.spinner('Merging updates'):
+        with st.spinner('Uploading and retrieving updates from snowflake'):
             # Merge
             sfk.insertIntoSnowflake("warehouse_students", df_students, create_temporary_students_table)
             sfk.insertIntoSnowflake("warehouse_exams", df_exams, create_temporary_exams_table)
@@ -101,10 +101,13 @@ with col2:
             """
             st.markdown(hide_table_row_index, unsafe_allow_html=True)
             df_students = sfk.selectEverythingSnowflake("warehouse_students")
+            st.subheader("Table: warehouse_students")
             st.table(df_students)
 
             st.markdown(hide_table_row_index, unsafe_allow_html=True)
+            
             df_exams = sfk.selectEverythingSnowflake("warehouse_exams")
+            st.subheader("Table: warehouse_exams")
             st.table(df_exams)
             st.success('New students & exams loaded into Snowflake!')
 
