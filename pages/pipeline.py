@@ -2,6 +2,7 @@ import streamlit as st
 import src.db_utils as sfk
 import pandas as pd
 import plotly.express as px
+import base64
 
 from PIL import Image
 
@@ -33,6 +34,9 @@ with col2:
 
         # 3. LOAD INTO SNOWFLAKE
         with st.spinner('Merging updates'):
+
+            st.markdown("![git merge](https://media.giphy.com/media/cFkiFMDg3iFoI/giphy.gif)")
+            
             # Merge
             sfk.insertIntoSnowflake("warehouse_students", df_students, create_temporary_students_table)
             sfk.insertIntoSnowflake("warehouse_exams", df_exams, create_temporary_exams_table)

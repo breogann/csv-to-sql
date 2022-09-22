@@ -67,7 +67,7 @@ df_students.columns = ["SOURCE_STUDENT_ID", "NAME", "SURNAME", "COUNTRY"]
 df_exams.columns = ["SOURCE_STUDENT_ID", "COHORT_ID", "CAMPUS_ID", "TEACHER_ID", "SCORE_VALUE"]
 
 
-# 4. SNOWFLAKE AUTHENTICATION & CONNECTION
+# 4. SNOWFLAKE AUTHENTICATION & CONNECTION FOR ENGINE
 def engineSnowflake():
     """Establishes a connection with Snowflake for further creating an engine.
     :return: none.
