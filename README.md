@@ -2,6 +2,8 @@
 
 This application will fetch a table and a non-relational database and will get the information, clean it and transfer it into a snowflake warehouse. Then, that very same information will be queried from a view and visualized.
 
+![problem](imgs/problem.png)
+
 You can either:
 
 - Use the [deployed version](https://breogann-csv-to-sql-main-case-study-h5c9cy.streamlitapp.com/)
@@ -51,11 +53,11 @@ echo MONGO_CONNECTION_STRING='"your_password"' >> .env
 
 You're now all set to try it. [Here](https://whimsical.com/snowflake-R7DsKdgPEFNQJ37HwWB2Yx) is a view of the workflow that the project follows:
 
-![workflow](imgs/whimsical.png)
+![workflow](imgs/whimsical-case.png)
 
 # Technologies used
 
-- googlesheetsdb
+- [gsheetsdb](https://pypi.org/project/gsheetsdb/)
 - [pandas](https://pandas.pydata.org/docs/index.html)
 - [pillow](https://pillow.readthedocs.io/en/stable/)
 - [pymongo](https://pymongo.readthedocs.io/en/stable/)
@@ -68,3 +70,5 @@ You're now all set to try it. [Here](https://whimsical.com/snowflake-R7DsKdgPEFN
 
 - Classes oriented approach
 - Refactoring: parametrization of SQL queries
+- Cover corner cases through error handling
+- Test driven development
